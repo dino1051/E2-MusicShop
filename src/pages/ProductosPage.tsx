@@ -1,4 +1,3 @@
-import { useState } from "react";
 import { ListaProductos } from "../components/ListaProductos";
 import { Paginacion } from "../components/Paginacion";
 import { useApi } from "../hooks/useApi";
@@ -6,7 +5,7 @@ import { productosService } from "../services/productos";
 import { useSearchParams } from "react-router-dom";
 
 const POR_PAGINA = 6;
-const CATEGORIA_INSTRUMENTOS = ['Instrumentos'];
+const CATEGORIA_INSTRUMENTOS = ["Instrumentos"];
 
 // TODO [C]: catalogo de la tienda
 // - ahora se ven los productos de TODOS los grupos. Mostrar solo los de
@@ -18,7 +17,6 @@ const CATEGORIA_INSTRUMENTOS = ['Instrumentos'];
 // - al cambiar de categoria volver a la pagina 1
 // - implementar getPagina y <Paginacion />
 
-
 export function ProductosPage() {
   const [searchParams, setSearchParams] = useSearchParams();
 
@@ -26,16 +24,15 @@ export function ProductosPage() {
   const pagina = !isNaN(paginaParam) && paginaParam > 0 ? paginaParam : 1;
 
   const categoriaParam = searchParams.get("categoria");
-  const categoria = 
-    categoriaParam && CATEGORIA_INSTRUMENTOS.includes(categoriaParam) 
-      ? categoriaParam 
+  const categoria =
+    categoriaParam && CATEGORIA_INSTRUMENTOS.includes(categoriaParam)
+      ? categoriaParam
       : CATEGORIA_INSTRUMENTOS[0];
 
   const { data, cargando, error, recargar } = useApi(
     () => productosService.getPagina(pagina, POR_PAGINA, categoria),
     [pagina, categoria],
   );
-
 
   const actualizarURL = (nuevaPagina: number, nuevaCategoria: string) => {
     setSearchParams({
@@ -56,9 +53,7 @@ export function ProductosPage() {
     <section>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className="mb-2 text-sm font-semibold text-marca-700">
-            Catálogo
-          </p>
+          <p className="mb-2 text-sm font-semibold text-marca-700">Catálogo</p>
           <h1 className="text-3xl font-bold tracking-tight">Productos</h1>
         </div>
 
