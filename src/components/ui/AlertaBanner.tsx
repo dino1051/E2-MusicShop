@@ -8,14 +8,75 @@ interface Props {
   onReintentar?: () => void;
 }
 
+const CONFIG: Record<TipoAlerta, { bg: string; text: string; icon: string }> = {
+  info: {
+    bg: "bg-blue-50 border-blue-200",
+    text: "text-blue-700",
+    icon: "\u2139",
+  },
+  exito: {
+    bg: "bg-emerald-50 border-emerald-200",
+    text: "text-emerald-700",
+    icon: "\u2713",
+  },
+  advertencia: {
+    bg: "bg-amber-50 border-amber-200",
+    text: "text-amber-700",
+    icon: "\u26A0",
+  },
+  error: {
+    bg: "bg-rose-50 border-rose-200",
+    text: "text-rose-700",
+    icon: "\u2715",
+  },
+};
+
 // TODO [D]: alerta reutilizable
 // - un color distinto por tipo (info, exito, advertencia, error)
 // - role="alert"
 // - boton cerrar si llega onCerrar, boton reintentar si llega onReintentar
-export function AlertaBanner({ tipo, titulo, mensaje }: Props) {
+
+export function AlertaBanner({
+  tipo,
+  titulo,
+  mensaje,
+  onCerrar,
+  onReintentar,
+}: Props) {
+  const { bg, text, icon } = CONFIG[tipo];
+
   return (
-    <div>
-      [{tipo}] {titulo}: {mensaje}
+    <div
+      className={`mt-4 flex flex-col gap-3 rounded-lg border p-4 ${bg}`}
+      role="alert"
+    >
+      <div className="flex gap-3">
+        <span className={`text-lg ${text}`}>{icon}</span>
+        <div className="flex-1">
+          {titulo && <p className={`font-semibold ${text}`}>{titulo}</p>}
+          <p className={`text-sm ${text}`}>{mensaje}</p>
+        </div>
+        {onCerrar && (
+          <button
+            type="button"
+            aria-label="Cerrar alerta"
+            onClick={onCerrar}
+            className={`border-0 bg-transparent text-lg ${text} hover:opacity-70`}
+          >
+            ×
+          </button>
+        )}
+      </div>
+
+      {onReintentar && (
+        <button
+          type="button"
+          onClick={onReintentar}
+          className={`w-fit self-start rounded-lg border px-4 py-2 text-sm font-semibold transition hover:opacity-80 ${text} border-current/30 bg-white/60`}
+        >
+          Intentar de nuevo
+        </button>
+      )}
     </div>
   );
 }
