@@ -1,9 +1,31 @@
-import { Outlet } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
+import { useAuthStore } from "../store/useAuthStore";
+import { useAuthHidratado } from "../hooks/useAuthHidratado";
 
-// TODO [A]: ahora deja pasar a cualquiera
-// - esperar a que el store se rehidrate (useAuthHidratado)
-// - sin sesion: <Navigate to="/login" replace />
-// - con sesion: <Outlet />
-export function RutaProtegida() {
+interface RutaProtegidaProps {
+  rolesPermitidos?: string[];
+}
+
+export function RutaProtegida({ rolesPermitidos }: RutaProtegidaProps) {
+  const verificandoSesion = !useAuthHidratado();
+  const autenticado = useAuthStore((s) => s.autenticado);
+  const usuarioRol = useAuthStore((s) => s.usuarioRol);
+  const token = useAuthStore((s) => s.token);
+
+  if (verificandoSesion) {
+    return <p>Verificando sesión...</p>;
+  }
+
+  if (!autenticado || !token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (
+    rolesPermitidos &&
+    !rolesPermitidos.includes((usuarioRol ?? "").toLowerCase())
+  ) {
+    return <Navigate to="/sin-acceso" replace />;
+  }
+
   return <Outlet />;
 }
