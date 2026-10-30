@@ -44,7 +44,7 @@ export const useAuthStore = create<AuthState>()(
         }),
     }),
     {
-      name: "mercado-auth-storage",
+      name: "e2-musicshop-auth-storage",
     },
   ),
 );
