@@ -11,13 +11,12 @@ const ANIO = new Date().getFullYear();
 
 function StoreMark() {
   return (
-    <span className="grid size-10 place-items-center rounded-xl bg-marca-600 text-lg font-bold text-white shadow-sm">
+    <span className="grid size-11 place-items-center rounded-xl bg-amber-500 text-xl font-bold text-black shadow-lg shadow-amber-500/20">
       {tema.inicial}
     </span>
   );
 }
 
-// TODO [A]: si la url trae ?sesion=expirada mostrar un aviso
 export function LoginPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -25,6 +24,8 @@ export function LoginPage() {
   const sesionExpirada = searchParams.get("sesion") === "expirada";
   const loginStore = useAuthStore((s) => s.login);
   const [errorServidor, setErrorServidor] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+
   const {
     register,
     handleSubmit,
@@ -43,6 +44,7 @@ export function LoginPage() {
         respuesta.user_name,
         respuesta.user_role,
       );
+
       navigate("/dashboard", { replace: true });
     } catch {
       setErrorServidor(
@@ -52,125 +54,134 @@ export function LoginPage() {
   };
 
   return (
-    <main className="min-h-screen bg-stone-50 px-5 py-8 text-slate-900 sm:px-8">
-      <div className="mx-auto flex min-h-[calc(100vh-4rem)] max-w-6xl items-center justify-center">
-        <section className="grid w-full overflow-hidden rounded-3xl border border-stone-200 bg-white shadow-xl shadow-stone-200/50 lg:grid-cols-[1.05fr_0.95fr]">
-          <div className="hidden flex-col justify-between bg-marca-700 p-10 text-white lg:flex xl:p-14">
-            <div className="flex items-center gap-3">
-              <StoreMark />
-              <span className="text-xl font-bold tracking-tight">
-                {tema.nombre}
-              </span>
-            </div>
-            <div className="max-w-md">
-              <p className="mb-4 text-sm font-semibold uppercase tracking-[0.2em] text-marca-200">
-                {tema.login.kicker}
-              </p>
-              <h1 className="text-5xl font-bold leading-[1.05] tracking-tight xl:text-6xl">
-                {tema.login.titulo}
-              </h1>
-              <p className="mt-6 max-w-sm text-base leading-7 text-marca-100">
-                {tema.login.texto}
-              </p>
-            </div>
-            <p className="text-sm text-marca-200">
-              © {ANIO} {tema.nombre}
+    <main className="min-h-screen bg-[#090909] p-4 text-white sm:p-6 lg:p-8">
+      <section className="mx-auto grid min-h-[calc(100vh-4rem)] max-w-7xl overflow-hidden rounded-3xl border border-white/10 bg-[#111111] shadow-2xl lg:grid-cols-2">
+        {/* Panel izquierdo */}
+        <div className="relative flex min-h-[280px] flex-col justify-between overflow-hidden bg-[#171717] p-8 sm:p-12 lg:min-h-full lg:p-14">
+          <img
+            src="/imagenes/login-instrumentos.jpg"
+            alt="Instrumentos musicales"
+            className="absolute inset-0 size-full object-cover opacity-40"
+          />
+
+          <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-black/90" />
+
+          <div className="relative z-10 flex items-center gap-3">
+            <StoreMark />
+            <span className="text-2xl font-bold tracking-wide">
+              {tema.nombre}
+            </span>
+          </div>
+
+          <div className="relative z-10 mt-12 max-w-lg">
+            <p className="mb-5 text-sm font-bold uppercase tracking-[0.3em] text-amber-400">
+              {tema.login.kicker}
+            </p>
+
+            <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-5xl xl:text-6xl">
+              {tema.login.titulo}
+            </h1>
+
+            <p className="mt-6 max-w-md text-base leading-7 text-neutral-300">
+              {tema.login.texto}
             </p>
           </div>
 
-          <div className="flex items-center justify-center p-7 sm:p-12 lg:p-14">
-            <div className="w-full max-w-sm">
-              <div className="mb-10 flex items-center gap-3 lg:hidden">
-                <StoreMark />
-                <span className="text-xl font-bold tracking-tight">
-                  {tema.nombre}
-                </span>
-              </div>
-              <div className="mb-8">
-                <p className="mb-3 text-sm font-semibold text-marca-700">
-                  Bienvenido de vuelta
-                </p>
-                <h2 className="text-3xl font-bold tracking-tight text-slate-950">
-                  Inicia sesión
-                </h2>
-                <p className="mt-2 text-sm leading-6 text-slate-500">
-                  Accede a tu cuenta para ver tus pedidos y favoritos.
-                </p>
-              </div>
-              {sesionExpirada && (
-                <div className="mb-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-700 border border-amber-200">
-                  Tu sesión ha expirado. Inicia sesión nuevamente.
-                </div>
-              )}
+          <p className="relative z-10 mt-12 text-sm text-neutral-400">
+            © {ANIO} {tema.nombre}. Todos los derechos reservados.
+          </p>
+        </div>
 
-              {errorServidor && (
-                <div className="mb-4 rounded-xl bg-rose-50 p-3 text-sm text-rose-600 border border-rose-200">
-                  {errorServidor}
-                </div>
-              )}
+        {/* Panel derecho: formulario */}
+        <div className="flex items-center justify-center px-6 py-12 sm:px-12 lg:px-16">
+          <div className="w-full max-w-md">
+            <div className="mb-10 flex items-center gap-3 lg:hidden">
+              <StoreMark />
+              <span className="text-2xl font-bold">{tema.nombre}</span>
+            </div>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
-                <label className="block text-sm font-semibold text-slate-700">
-                  Correo electrónico
-                  <input
-                    {...register("email")}
-                    className="mt-2 h-12 w-full rounded-xl border border-stone-300 bg-white px-4 font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-marca-600 focus:ring-4 focus:ring-marca-600/10"
-                    type="email"
-                    placeholder="tu@email.com"
-                  />
-                  {errors.email && (
-                    <span className="mt-1 block text-xs font-medium text-rose-500">
-                      {errors.email.message}
-                    </span>
-                  )}
-                </label>
+            <div className="mb-9">
+              <p className="mb-3 text-sm font-bold uppercase tracking-widest text-amber-400">
+                Bienvenido de vuelta
+              </p>
 
-                <label className="block text-sm font-semibold text-slate-700">
-                  Contraseña
-                  <input
-                    {...register("password")}
-                    className="mt-2 h-12 w-full rounded-xl border border-stone-300 bg-white px-4 font-normal text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-marca-600 focus:ring-4 focus:ring-marca-600/10"
-                    type="password"
-                    placeholder="••••••••"
-                  />
-                  {errors.password && (
-                    <span className="mt-1 block text-xs font-medium text-rose-500">
-                      {errors.password.message}
-                    </span>
-                  )}
-                </label>
+              <h2 className="text-4xl font-bold tracking-tight text-white">
+                Inicia sesión
+              </h2>
 
-                <div className="flex justify-end">
-                  <a
-                    className="text-xs font-semibold text-marca-700 hover:text-marca-800"
-                    href="#forgot-password"
-                  >
-                    ¿Olvidaste tu contraseña?
-                  </a>
-                </div>
-
-                <button
-                  className="h-12 w-full rounded-xl bg-marca-600 text-sm font-bold text-white transition hover:bg-marca-700 focus:outline-none focus:ring-4 focus:ring-marca-600/20 disabled:opacity-50"
-                  type="submit"
-                  disabled={isSubmitting}
-                >
-                  {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
-                </button>
-              </form>
-
-              <p className="mt-8 text-center text-sm text-slate-500">
-                ¿Todavía no tienes una cuenta?{" "}
-                <a
-                  className="font-bold text-marca-700 hover:text-marca-800"
-                  href="#register"
-                >
-                  Regístrate
-                </a>
+              <p className="mt-3 text-sm leading-6 text-neutral-400">
+                Ingresa a tu cuenta para continuar.
               </p>
             </div>
+
+            {sesionExpirada && (
+              <div className="mb-5 rounded-xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-300">
+                Tu sesión ha expirado. Inicia sesión nuevamente.
+              </div>
+            )}
+
+            {errorServidor && (
+              <div className="mb-5 rounded-xl border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-300">
+                {errorServidor}
+              </div>
+            )}
+
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <label className="block text-sm font-semibold text-neutral-200">
+                Correo electrónico
+                <input
+                  {...register("email")}
+                  type="email"
+                  placeholder="tu@email.com"
+                  className="mt-3 h-14 w-full rounded-xl border border-white/10 bg-[#1c1c1c] px-4 text-white outline-none transition placeholder:text-neutral-600 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                />
+                {errors.email && (
+                  <span className="mt-2 block text-xs font-medium text-red-400">
+                    {errors.email.message}
+                  </span>
+                )}
+              </label>
+
+              <label className="block text-sm font-semibold text-neutral-200">
+                Contraseña
+                <div className="relative mt-3">
+                  <input
+                    {...register("password")}
+                    type={mostrarPassword ? "text" : "password"}
+                    placeholder="Ingresa tu contraseña"
+                    className="h-14 w-full rounded-xl border border-white/10 bg-[#1c1c1c] px-4 pr-24 text-white outline-none transition placeholder:text-neutral-600 focus:border-amber-500 focus:ring-2 focus:ring-amber-500/20"
+                  />
+
+                  <button
+                    type="button"
+                    onClick={() => setMostrarPassword(!mostrarPassword)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-xs font-semibold text-amber-400 hover:text-amber-300"
+                  >
+                    {mostrarPassword ? "Ocultar" : "Mostrar"}
+                  </button>
+                </div>
+                {errors.password && (
+                  <span className="mt-2 block text-xs font-medium text-red-400">
+                    {errors.password.message}
+                  </span>
+                )}
+              </label>
+
+              <button
+                className="h-14 w-full rounded-xl bg-amber-500 text-sm font-bold text-black shadow-lg shadow-amber-500/10 transition hover:bg-amber-400 focus:outline-none focus:ring-4 focus:ring-amber-500/20 disabled:cursor-not-allowed disabled:opacity-50"
+                type="submit"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Iniciando sesión..." : "Iniciar sesión"}
+              </button>
+            </form>
+
+            <p className="mt-8 text-center text-xs text-neutral-500">
+              Acceso seguro a {tema.nombre}
+            </p>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
     </main>
   );
 }

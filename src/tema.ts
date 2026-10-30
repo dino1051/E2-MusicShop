@@ -7,7 +7,7 @@ export interface Categoria {
 }
 
 export const tema = {
-  nombre: "mercado",
+  nombre: "E2-MusicShop",
   inicial: "M",
   emoji: "🛒",
   login: {
