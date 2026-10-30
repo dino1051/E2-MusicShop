@@ -3,8 +3,10 @@ import { ListaProductos } from "../components/ListaProductos";
 import { Paginacion } from "../components/Paginacion";
 import { useApi } from "../hooks/useApi";
 import { productosService } from "../services/productos";
+import { useSearchParams } from "react-router-dom";
 
 const POR_PAGINA = 6;
+const CATEGORIA_INSTRUMENTOS = ['Instrumentos'];
 
 // TODO [C]: catalogo de la tienda
 // - ahora se ven los productos de TODOS los grupos. Mostrar solo los de
@@ -15,27 +17,39 @@ const POR_PAGINA = 6;
 //   usar los valores por defecto
 // - al cambiar de categoria volver a la pagina 1
 // - implementar getPagina y <Paginacion />
+
+
 export function ProductosPage() {
-  const [pagina, setPagina] = useState(1);
-  const [categoria, setCategoria] = useState("Todas");
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const paginaParam = Number(searchParams.get("pagina"));
+  const pagina = !isNaN(paginaParam) && paginaParam > 0 ? paginaParam : 1;
+
+  const categoriaParam = searchParams.get("categoria");
+  const categoria = 
+    categoriaParam && CATEGORIA_INSTRUMENTOS.includes(categoriaParam) 
+      ? categoriaParam 
+      : CATEGORIA_INSTRUMENTOS[0];
 
   const { data, cargando, error, recargar } = useApi(
     () => productosService.getPagina(pagina, POR_PAGINA, categoria),
     [pagina, categoria],
   );
 
-  const { data: todos } = useApi(() => productosService.getTodos(), []);
-  const categorias = [
-    "Todas",
-    ...new Set((todos ?? []).map((p) => p.categoria)),
-  ];
+
+  const actualizarURL = (nuevaPagina: number, nuevaCategoria: string) => {
+    setSearchParams({
+      categoria: nuevaCategoria,
+      pagina: nuevaPagina.toString(),
+    });
+  };
 
   const cambiarCategoria = (nueva: string) => {
-    setCategoria(nueva);
+    actualizarURL(1, nueva);
   };
 
   const irAPagina = (nueva: number) => {
-    setPagina(nueva);
+    actualizarURL(nueva, categoria);
   };
 
   return (
@@ -55,7 +69,7 @@ export function ProductosPage() {
             onChange={(e) => cambiarCategoria(e.target.value)}
             className="mt-1 block h-10 rounded-xl border border-stone-300 bg-white px-3 font-normal"
           >
-            {categorias.map((cat) => (
+            {CATEGORIA_INSTRUMENTOS.map((cat) => (
               <option key={cat} value={cat}>
                 {cat}
               </option>
@@ -70,7 +84,7 @@ export function ProductosPage() {
         error={error}
         porPagina={POR_PAGINA}
         onReintentar={recargar}
-        onLimpiarFiltros={() => cambiarCategoria("Todas")}
+        onLimpiarFiltros={() => cambiarCategoria(CATEGORIA_INSTRUMENTOS[0])}
       />
 
       <Paginacion

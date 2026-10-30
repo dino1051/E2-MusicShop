@@ -38,18 +38,37 @@ export const productosService = {
   // - pagina 1 -> skip 0, pagina 2 -> skip porPagina, ...
   // - la API no devuelve el total: pedir porPagina + 1 y si llegan
   //   mas de porPagina es que hay pagina siguiente
+
+
+  //pagina es el parametro que va ayudar a que se divida en varias paginas
   getPagina: async (
     pagina: number,
     porPagina: number,
     categoria: string,
   ): Promise<PaginaProductos> => {
-    console.warn("TODO [C]: getPagina", pagina, porPagina);
-    const respuesta = await api.get<ProductoApi[]>("/products/", {
-      params: categoria !== "Todas" ? { category: categoria } : {},
-    });
+    const skip = (pagina - 1) * porPagina;
+    const params: Record<string, any> = {
+      skip: skip,
+      limit: porPagina + 1,
+    };
+
+    if (categoria && categoria !== "Todas") {
+      params.category = categoria;
+    }
+
+    const respuesta = await api.get<ProductoApi[]>("/products/", { params });
+    const productosMultitud = respuesta.data;
+
+    //AYUDA A FILTRAR PARA MANDARLOS A OTRA PAGINA
+    const hayMas = productosMultitud.length > porPagina;
+
+    const productosPagina = hayMas 
+      ? productosMultitud.slice(0, porPagina) 
+      : productosMultitud;
+
     return {
-      productos: respuesta.data.map(convertirProducto),
-      hayMas: false,
+      productos: productosPagina.map(convertirProducto),
+      hayMas: hayMas,
     };
   },
 
